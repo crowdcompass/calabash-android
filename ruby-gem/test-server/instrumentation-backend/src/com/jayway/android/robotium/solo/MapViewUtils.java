@@ -186,18 +186,22 @@ public class MapViewUtils {
 		Log.i("TapMarker", "Looking for marker '" + title + "'");
 		
 		while( SystemClock.uptimeMillis() < endTime ) {
-			MapView mapView = getMapView();
+			final MapView mapView = getMapView();
 			for( Overlay overlay : mapView.getOverlays() ) {
 				if( overlay instanceof ItemizedOverlay ) {
 					@SuppressWarnings("rawtypes")
-					ItemizedOverlay markerOverlay = ((ItemizedOverlay)overlay);
+					final ItemizedOverlay markerOverlay = ((ItemizedOverlay)overlay);
 					int noOfMarkers = markerOverlay.size();
 					for( int i = 0; i < noOfMarkers; i++ ) {
-						OverlayItem item = markerOverlay.getItem(i);
+						final OverlayItem item = markerOverlay.getItem(i);
 						String itemTitle = item.getTitle();
 //						Log.i("TapMarker", "  item title: " + itemTitle);
 						if( title.equals( itemTitle ) ) {
-							markerOverlay.onTap( item.getPoint(), mapView );
+							mapView.post(new Runnable() {
+								public void run() {
+									markerOverlay.onTap( item.getPoint(), mapView );
+								}
+							});
 							return true;
 						}
 					}
